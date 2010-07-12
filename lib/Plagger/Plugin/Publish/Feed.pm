@@ -2,7 +2,7 @@ package Plagger::Plugin::Publish::Feed;
 
 use strict;
 use base qw( Plagger::Plugin );
-
+use Plagger::Util;
 use XML::Feed;
 use XML::Feed::Entry;
 use XML::RSS::LibXML;
@@ -38,9 +38,8 @@ sub plugin_init {
 }
 
 sub cleanup {
-    my ($in) = @_;
-    $in =~ s/&nbsp;/&#160;/g;
-    return $in;
+    my ( $possible_xml ) = @_;
+    return Plagger::Util::encode_xml( $possible_xml );
 }
 
 sub publish_feed {

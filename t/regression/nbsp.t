@@ -26,5 +26,5 @@ plugins:
       dir: $FindBin::Bin
       filename: atom.xml
 --- expected regexp
-(nbsp){0}
+(&nbsp;){0}
 (Dead)
