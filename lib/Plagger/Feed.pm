@@ -101,12 +101,13 @@ sub _sort_prioritize {
     my $now = time;
     return
         map { $_->[0] }
-        sort { $b->[1] <=> $a->[1] || $b->[2] <=> $a->[2] || $b->[3] <=> $a->[3] || $b->[4] <=> $a->[4] }
+        sort { $b->[3] <=> $a->[3] || $b->[4] <=> $a->[4]  || $b->[1] <=> $a->[1] || $b->[2] <=> $a->[2] || $b->[5] <=> $a->[5] }
         map { [
             $_,                                              # Plagger::Entry for Schwartzian
             _is_same_domain($permalink, $_->source->url),    # permalink and $feed->url is the same domain
             _is_same_domain($permalink, $_->source->link),   # permalink and $feed->link is the same domain
-            ($_->date ? ($now - $_->date->epoch) : 0),       # Older entry date is prioritized
+	    ($_->retrieved ? ($now - $_->retrieved->epoch) : ($_->date ? ($now - $_->date->epoch): 0 )),
+            ($_->date ? ($now - $_->date->epoch) : ($_->retrieved ? ($now - $_->retrieved->epoch) : 0)),       # Older entry date is prioritized
             length($_->body || ''),                          # Prioritize full content feed
         ] } @entries;
 }
