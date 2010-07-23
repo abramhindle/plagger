@@ -120,12 +120,8 @@ sub handle_feed {
             }
         }
 
-        my $date = eval { $e->issued } || eval { $e->modified } || Plagger::Date->now();
+        my $date = eval { $e->issued } || eval { $e->modified };
         $entry->date( Plagger::Date->rebless($date) ) if $date;
-	{
-		my $t = eval { $e->retrieved } || Plagger::Date->now();
-		$entry->retrieved( Plagger::Date->rebless( $t ) );
-	}
 
         # xxx nasty hack. We should remove this once XML::Atom or XML::Feed is fixed
         if (!$entry->date && $remote->format eq 'Atom' && $e->{entry}->version eq '1.0') {
