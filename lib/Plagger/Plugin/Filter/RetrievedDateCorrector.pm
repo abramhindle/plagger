@@ -22,6 +22,8 @@ sub initialize {
     my $tmppath = Plagger->context->cache->path_to('Retrieved.db');
     # make the db
     my $db = Plagger::Rule::Deduped::DB_File->new( { 'path' => ($config->{path} || $tmppath) } );
+    $self->{replacedate} = $config->{replacedate} || 0;
+    $self->{replacefuture} = $config->{replacefuture} || 0;
     $self->{db} = $db;
     $context->log(debug => "initialized RetrievedDateCorrector");
 
@@ -47,8 +49,9 @@ sub filter {
     my $entry = $args->{entry};
     my $id = $self->id_for($entry);
     my $date = undef;
+    my $now = Plagger::Date->now();
     if ( $self->is_new( $entry ) ) {
-        $date = Plagger::Date->now();
+        $date = $now;
         # record that we saw this entry when it was new
         $context->log(debug => "RetrievedDateCorrector seen a new one!");
         $db->create_entry( $id , $date->epoch );
@@ -58,8 +61,16 @@ sub filter {
 
         $date = Plagger::Date->from_epoch( $db->find_entry( $id ) );
     }
-    # in all cases the date is replaced 
-    $entry->date( $date );
+
+    if (! $entry->date()) {
+        # replace if no date
+        $entry->date( $date );
+    } elsif ( $self->{replacedate} ) {
+        # in all cases the date is replaced 
+        $entry->date( $date );
+    } elsif ( $self->{replacefuture} && $entry->date > $now) {
+        $entry->date( $date );
+    }
 }
 
 1;
@@ -74,6 +85,8 @@ Plagger::Plugin::Filter::RetrievedDateCorrector - Ignore the date of the article
   - module: Filter::RetrievedDateCorrector
     config:
       path: ./Retrieved.db
+      replacedate: 1
+      replacefuture: 1
 
 =head1 DESCRIPTION
 
@@ -89,6 +102,14 @@ This plugin is meant to fix glaring failures in how the planet module orders art
 =item path
 
 Sets the file to record where we saw it.
+
+=item replacedate
+
+Should we replace the date of the entry if it has a date?
+
+=item replacefuture
+
+Should we replace the date of the entry if it has a date set in the future?
 
 =back
 
