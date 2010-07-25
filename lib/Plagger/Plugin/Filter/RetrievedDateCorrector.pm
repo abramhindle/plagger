@@ -90,10 +90,17 @@ Plagger::Plugin::Filter::RetrievedDateCorrector - Ignore the date of the article
 
 =head1 DESCRIPTION
 
-This plugin filters entries and replaces the current date with the retrieved date.
-The retrieved date is also cached. 
+This plugin filters entries and replaces the current date with the
+retrieved date.  The retrieved date is also cached in all cases.
 
-This plugin is meant to fix glaring failures in how the planet module orders articles.
+There are options where you don't replace the date for every entry,
+just the ones missing it. It needs a DB file to operate so it can
+remember previous entries from previous runs.
+
+This plugin allows you to order your entries by order of
+retrieval. This isn't very useful initially but grows in usefulness
+when used in conjunction with the planet module as poorly behaving
+feeds are tracked appropraitely for time.
 
 =head1 CONFIG
 
