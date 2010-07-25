@@ -17,6 +17,7 @@ sub init { }
 sub id_for {
     my($self, $entry) = @_;
 
+    # This doesn't help if we set the date as new each time!
     if ($entry->date) {
         return join ":", $entry->permalink, $entry->date;
     } else {
